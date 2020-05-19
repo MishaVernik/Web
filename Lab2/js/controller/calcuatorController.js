@@ -1,7 +1,7 @@
 export default class CalculatorController {
 
     constructor() {
-        this.clear()
+        this.clear()      
     }
 
     static get currentOperand() {

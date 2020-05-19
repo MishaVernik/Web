@@ -8,6 +8,16 @@ class CalculatorBuilder {
     this.view = new CalculatorView(this.model.previousOperandTextElement, this.model.currentOperandTextElement)
     this.controller = new CalculatorController()
 
+    this.worker = new Worker('js/workers.js');
+    this.worker.onmessage = (value) => {
+        if (value.data != null && value.data != undefined && value.data != NaN) {
+            this.currentOperand = value.data;                
+            this.previousOperand = ''
+            this.operation = undefined
+            this.view.updateDisplay(this.controller.currentOperand, this.controller.previousOperand, this.controller.operation)
+        }
+    }
+
     this.InitNumberButtons()
 
     this.InitOperationButtons()
@@ -63,15 +73,15 @@ class CalculatorBuilder {
   }
 
   InitB2D(){
-    this.model.binaryToDecimal.addEventListener('click', button => {
-      this.controller.binary2Decimal()
+    this.model.binaryToDecimal.addEventListener('click', button => {     
+      this.worker.postMessage({op: 'B2D', value: this.controller.binary2Decimal()})
       this.view.updateDisplay(this.controller.currentOperand, this.controller.previousOperand, this.controller.operation)
     })
   }
 
   InitD2B(){
-    this.model.decimalToBinary.addEventListener('click', button => {
-      this.controller.decimal2Binary()
+    this.model.decimalToBinary.addEventListener('click', button => {      
+      this.worker.postMessage({op: 'D2B', value: this.controller.decimal2Binary()})
       this.view.updateDisplay(this.controller.currentOperand, this.controller.previousOperand, this.controller.operation)
     })
   }
